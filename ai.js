@@ -6,7 +6,7 @@ document.getElementById('start-btn').addEventListener('click', async () => {
   recognition.maxAlternatives = 1;
 
   recognition.onstart = () => {
-      addMessage('system', 'Recognition started.');
+      addMessage('system', 'Please start speaking.');
   };
 
   recognition.onspeechend = () => {
@@ -32,7 +32,7 @@ document.getElementById('start-btn').addEventListener('click', async () => {
   };
 
   recognition.onend = () => {
-      addMessage('system', 'Recognition ended.');
+      addMessage('system', 'Please wait for response.');
   };
 
   recognition.start();
