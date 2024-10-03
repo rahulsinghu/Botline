@@ -26,12 +26,18 @@ document.getElementById('start-btn').addEventListener('click', async () => {
     recognition.onresult = async (event) => {
         const userQuery = event.results[0][0].transcript;
         addMessage('user', userQuery);
-        try {
-            const aiResponse = await getResponseFromAPI(userQuery);
-            addMessage('ai', aiResponse);
-            speakText(aiResponse);
-        } catch (error) {
-            addMessage('error', 'Error fetching API response: ' + error.message);
+
+        // Check if the query is related to consumers or rights
+        if (isConsumerOrRightsRelated(userQuery)) {
+            try {
+                const aiResponse = await getResponseFromAPI(userQuery);
+                addMessage('ai', aiResponse);
+                speakText(aiResponse);
+            } catch (error) {
+                addMessage('error', 'Error fetching API response: ' + error.message);
+            }
+        } else {
+            addMessage('error', 'Your query must be related to consumers or rights.');
         }
     };
 
@@ -46,6 +52,12 @@ document.getElementById('start-btn').addEventListener('click', async () => {
 
     recognition.start();
 });
+
+// Function to check if the user query is related to consumers or rights
+function isConsumerOrRightsRelated(query) {
+    const keywords = ['consumer', 'rights', 'consumer rights', 'protection', 'complaint', 'service', 'product'];
+    return keywords.some(keyword => query.toLowerCase().includes(keyword));
+}
 
 async function getResponseFromAPI(userQuery) {
     try {
