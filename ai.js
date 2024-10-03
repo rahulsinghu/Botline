@@ -1,7 +1,9 @@
 document.getElementById('start-btn').addEventListener('click', async () => {
   const responseContainer = document.getElementById('response');
   const recognition = new webkitSpeechRecognition();
-  recognition.lang = 'en-US';
+  
+  // Set the default language; you can also allow users to select this.
+  recognition.lang = 'en-US'; // Default language
   recognition.interimResults = false;
   recognition.maxAlternatives = 1;
 
@@ -17,11 +19,12 @@ document.getElementById('start-btn').addEventListener('click', async () => {
 
   recognition.onresult = async (event) => {
       const userQuery = event.results[0][0].transcript;
+      const detectedLanguage = detectLanguage(userQuery); // Detect the language of userQuery
       addMessage('user', userQuery);
       try {
-          const aiResponse = await getResponseFromAPI(userQuery);
+          const aiResponse = await getResponseFromAPI(userQuery, detectedLanguage); // Pass detected language
           addMessage('ai', aiResponse);
-          speakText(aiResponse);
+          speakText(aiResponse, detectedLanguage); // Pass detected language for TTS
       } catch (error) {
           addMessage('error', 'Error fetching API response: ' + error.message);
       }
@@ -38,7 +41,7 @@ document.getElementById('start-btn').addEventListener('click', async () => {
   recognition.start();
 });
 
-async function getResponseFromAPI(userQuery) {
+async function getResponseFromAPI(userQuery, language) {
   const response = await fetch('https://jamsapi.hackclub.dev/openai/chat/completions', {
       method: 'POST',
       headers: {
@@ -47,7 +50,7 @@ async function getResponseFromAPI(userQuery) {
       },
       body: JSON.stringify({
           model: 'gpt-3.5-turbo',
-          messages: [{ role: 'user', content: `Provide a brief and concise answer: ${userQuery}` }],
+          messages: [{ role: 'user', content: `Provide a brief and concise answer in ${language}: ${userQuery}` }],
           max_tokens: 100
       })
   });
@@ -69,8 +72,16 @@ function addMessage(role, message) {
   responseContainer.scrollTop = responseContainer.scrollHeight;
 }
 
-function speakText(text) {
+// Function to detect language from the input (implement your own logic)
+function detectLanguage(text) {
+  // Placeholder for language detection logic. For example, you can use 'franc-min' here.
+  const franc = require('franc-min'); // Ensure you have installed franc-min
+  const langCode = franc(text);
+  return langCode === 'und' ? 'en' : langCode; // Default to 'en' if undetermined
+}
+
+function speakText(text, language) {
   const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = 'en-US';
+  utterance.lang = language; // Set the language for the speech synthesis
   window.speechSynthesis.speak(utterance);
 }
