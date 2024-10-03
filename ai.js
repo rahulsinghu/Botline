@@ -6,7 +6,7 @@ document.getElementById('start-btn').addEventListener('click', async () => {
   recognition.maxAlternatives = 1;
 
   recognition.onstart = () => {
-      addMessage('system', 'Recognition started. Please start speaking.');
+      addMessage('system', 'Recognition started.');
   };
 
   recognition.onspeechend = () => {
@@ -18,27 +18,21 @@ document.getElementById('start-btn').addEventListener('click', async () => {
   recognition.onresult = async (event) => {
       const userQuery = event.results[0][0].transcript;
       addMessage('user', userQuery);
-      console.log("User Query:", userQuery); // Debugging line
-      if (userQuery) { // Ensure userQuery is not empty
-          try {
-              const aiResponse = await getResponseFromAPI(userQuery);
-              addMessage('ai', aiResponse);
-              speakText(aiResponse);
-          } catch (error) {
-              addMessage('error', 'Error fetching API response: ' + error.message);
-          }
-      } else {
-          addMessage('error', 'No speech recognized.');
+      try {
+          const aiResponse = await getResponseFromAPI(userQuery);
+          addMessage('ai', aiResponse);
+          speakText(aiResponse);
+      } catch (error) {
+          addMessage('error', 'Error fetching API response: ' + error.message);
       }
   };
 
   recognition.onerror = (event) => {
       addMessage('error', 'Error occurred in recognition: ' + event.error);
-      console.log("Recognition Error:", event.error); // Debugging line
   };
 
   recognition.onend = () => {
-      addMessage('system', 'Recognition ended. Please wait for response.');
+      addMessage('system', 'Recognition ended.');
   };
 
   recognition.start();
@@ -49,7 +43,7 @@ async function getResponseFromAPI(userQuery) {
       method: 'POST',
       headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer A2FLLX4NGG1JEEAHH9JCEM9RD4Z1U1L1U5X28YC2RG16PO8TEZDLTEYBDUIQMDW4'
+          'Authorization': 'A2FLLX4NGG1JEEAHH9JCEM9RD4Z1U1L1U5X28YC2RG16PO8TEZDLTEYBDUIQMDW4'
       },
       body: JSON.stringify({
           model: 'gpt-3.5-turbo',
