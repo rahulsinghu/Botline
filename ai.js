@@ -1,20 +1,4 @@
-recognition.maxAlternatives = 1;
-
-recognition.onstart = () => {
-      addMessage('system', 'Recognition started.');
-      addMessage('system', 'Please start speaking.');
-};
-
-recognition.onspeechend = () => {
-@@ -32,7 +32,7 @@ document.getElementById('start-btn').addEventListener('click', async () => {
-};
-
-recognition.onend = () => {
-      addMessage('system', 'Recognition ended.');
-      addMessage('system', 'Please wait for response.');
-};
-
-recognition.start();', async () => {
+document.getElementById('start-btn').addEventListener('click', async () => {
   const responseContainer = document.getElementById('response');
   const recognition = new webkitSpeechRecognition();
   recognition.lang = 'en-US';
@@ -22,7 +6,7 @@ recognition.start();', async () => {
   recognition.maxAlternatives = 1;
 
   recognition.onstart = () => {
-      addMessage('system', 'Please start speaking.');
+      addMessage('system', 'Recognition started. Please start speaking.');
   };
 
   recognition.onspeechend = () => {
@@ -34,21 +18,27 @@ recognition.start();', async () => {
   recognition.onresult = async (event) => {
       const userQuery = event.results[0][0].transcript;
       addMessage('user', userQuery);
-      try {
-          const aiResponse = await getResponseFromAPI(userQuery);
-          addMessage('ai', aiResponse);
-          speakText(aiResponse);
-      } catch (error) {
-          addMessage('error', 'Error fetching API response: ' + error.message);
+      console.log("User Query:", userQuery); // Debugging line
+      if (userQuery) { // Ensure userQuery is not empty
+          try {
+              const aiResponse = await getResponseFromAPI(userQuery);
+              addMessage('ai', aiResponse);
+              speakText(aiResponse);
+          } catch (error) {
+              addMessage('error', 'Error fetching API response: ' + error.message);
+          }
+      } else {
+          addMessage('error', 'No speech recognized.');
       }
   };
 
   recognition.onerror = (event) => {
       addMessage('error', 'Error occurred in recognition: ' + event.error);
+      console.log("Recognition Error:", event.error); // Debugging line
   };
 
   recognition.onend = () => {
-      addMessage('system', 'Please wait for response.');
+      addMessage('system', 'Recognition ended. Please wait for response.');
   };
 
   recognition.start();
@@ -90,4 +80,3 @@ function speakText(text) {
   utterance.lang = 'en-US';
   window.speechSynthesis.speak(utterance);
 }
-
