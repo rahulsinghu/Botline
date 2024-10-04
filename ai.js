@@ -37,7 +37,7 @@ document.getElementById('start-btn').addEventListener('click', async () => {
                 addMessage('error', 'Error fetching API response: ' + error.message);
             }
         } else {
-            addMessage('error', 'Your query must be related to consumers or rights.');
+            addMessage('error', 'Your query must be related to consumers or their rights.');
         }
     };
 
