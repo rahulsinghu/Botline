@@ -28,7 +28,7 @@ document.getElementById('start-btn').addEventListener('click', async () => {
         addMessage('user', userQuery);
 
         // Check if the query is related to consumers or rights
-        if (isConsumerOrRightsRelatedOrProductRelated(userQuery)) {
+        if (isConsumerOrRightsRelated(userQuery)) {
             try {
                 const aiResponse = await getResponseFromAPI(userQuery);
                 addMessage('ai', aiResponse);
